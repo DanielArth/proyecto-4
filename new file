@@ -1,0 +1,60 @@
+import numpy as np
+import pandas as pd
+class regresion:
+  def __init__(self,x,y):
+    self.x=x
+    self.y=y
+  def betas(self):
+    b=np.linalg.inv(self.x.T@self.x)@(self.x.T@self.y)
+    return b
+  def ee(self):
+    b=self.betas()
+    yestim=self.x@b
+    errorestim=self.y-yestim
+    n,k=x.shape
+    varianza=(errorestim.T@errorestim)/(n-k)
+    errorestandar=(np.diagonal(varianza*np.linalg.inv(self.x.T@self.x)))**(1/2)
+    return errorestandar.reshape(-1,1)
+  def estadisticot(self):
+    estadisticot=((self.betas().reshape(-1,1))/self.ee())
+    return estadisticot
+  def intervaloconfianza(self):
+    limsup=self.betas()+1.96*self.ee()
+    liminf=self.betas()-1.96*self.ee()
+    for i, j in zip(liminf, limsup):
+      print(i[0], j[0])
+    #return  liminf, limsup
+    
+!pip install wooldridge
+    
+import wooldridge as wd
+crime=wd.data("crime1")
+crime=crime[["narr86","pcnv","avgsen","tottime","inc86"]]
+crime
+y=crime.pop("narr86")
+x=np.c_[np.ones(len(crime)),crime.to_numpy()]
+reg=regresion(x,y)
+reg.betas()
+reg.ee()
+reg.estadisticot()
+reg.intervaloconfianza()
+se puede observar dentro de la regresión que: donde tenemos como la variable dependiente el numero de veces arrestado, y que variables independientes provoca que este numero aumente o disminuya.
+
+la proporcion de cadenas anteriores al aumentar, puede llegar a disminuir la cantidad de veces que esta paersona sea arrestado. Es esta una variable probablemente significativa
+
+el promedio en tiempo de la cadena no es significativo ( aunque hubiese podido disminuir en gran medida dados los datos en la varisable independiente tan amplios
+
+el tiempo en prision desde los 18 meses no es significativa ( aunque hubiese afectado de forma positiva a la variable dependiente )
+
+los ingresos legales son significativos, y aunte un aumento de sestos, se disminuye la probabilidad de ser arrestado
+
+crime=wd.data("crime1")
+crime=crime[["narr86","pcnv","avgsen","tottime","inc86","pcnvsq", "inc86sq"]]
+crime
+y=crime.pop("narr86")
+x=np.c_[np.ones(len(crime)),crime.to_numpy()]
+reg=regresion(x,y)
+reg.betas()
+reg.ee()
+reg.estadisticot()
+reg.intervaloconfianza()
